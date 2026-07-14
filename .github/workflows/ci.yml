@@ -46,13 +46,21 @@ jobs:
           node tests/js/verify_app.js
 
       - name: 도메인 이름이 코드에 새어들지 않았나
-        # scripts/ 에 인물 도메인 축 이름이 리터럴로 나타나면 실패.
-        # (주석·독스트링은 허용 — 왜 그렇게 했는지 설명하는 문장까지 막을 이유는 없다)
+        # scripts/ 에 인물 도메인 축 이름이 **코드로** 나타나면 실패.
+        #
+        # 주석·독스트링은 허용한다 — 이 저장소의 주석은 "예전엔 'where' 를 박아뒀는데
+        # 그래서 이런 게 깨졌다" 를 설명한다. 그 문장까지 막으면 왜 이렇게 됐는지가 사라진다.
+        #
+        # ⚠ grep 출력은 `파일:줄:` 접두어가 붙는다. `grep -v '^\s*#'` 로는 주석이 안 걸러진다
+        #    (첫 CI 실행이 이것 때문에 주석 5줄을 코드로 오인해 빨간불이 났다).
         run: |
-          if grep -rnE '["'"'"'](where|pose_action|camera_style|shot_size)["'"'"']' \
-               --include=*.py --include=*.js scripts/ \
-               | grep -v node_modules | grep -v '^\s*#'; then
+          hits=$(grep -rnE '["'"'"'](where|pose_action|camera_style|shot_size)["'"'"']' \
+                   --include=*.py --include=*.js scripts/ \
+                 | grep -v node_modules \
+                 | grep -vE ':[0-9]+:[[:space:]]*(#|//|\*|/\*)' || true)
+          if [ -n "$hits" ]; then
+            echo "$hits"
             echo "::error::scripts/ 에 인물 도메인 축 이름이 리터럴로 박혀 있다 — taxonomy 에서 파생하라"
             exit 1
           fi
-          echo "✓ 도메인 리터럴 없음"
+          echo "✓ 도메인 리터럴 없음 (주석·독스트링 제외)"
