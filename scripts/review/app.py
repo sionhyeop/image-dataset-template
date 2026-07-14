@@ -158,6 +158,18 @@ def main() -> int:
             sug.setdefault(r["image_id"], {})[r["axis"]] = [
                 r["code"], round(float(r["conf"]), 2), bool(r.get("auto_ok"))]
 
+    # 대시보드 스토리(선택) — **데이터셋 자산이다.** datasets/<이름>/story.html.
+    #
+    # 저장소 공용(docs/)에 두고 폴백하면 인물 데이터셋의 LoRA 학습 이야기가 음식·인테리어
+    # 대시보드에도 실린다(실제로 그랬다 — 남의 도메인 사진이 든 233KB 가 딸려갔다).
+    # 04_samples 도 보지 않는다 — 거기는 빌드 산출물 폴더다. 산출물을 입력으로 삼으면
+    # 오래된 사본을 다시 구워넣게 된다.
+    story = None
+    story_p = common.DATASET_ROOT / "story.html"
+    if story_p.exists():
+        story = story_p.read_text(encoding="utf-8")
+        print(f"  스토리 인라인: {common.rel(story_p)} ({len(story)/1024:.0f}KB)")
+
     payload = {
         "IMAGES": IMAGES, "DATA": DATA,
         "TAX": {ax: taxonomy[ax] for ax, _, _ in AXES},
@@ -175,11 +187,16 @@ def main() -> int:
         "SIGS": SIGS,        # 자동 발견된 시각·색 신호 인덱스 (app.js 가 VIDX/CIDX 를 여기서 뽑는다)
         "SIGPROF": sigprof,  # 신호 가중치 (check/tune_camw.js 가 실제 파이프라인으로 측정)
         "CURATION": common.load_curation(),   # 목적·게이트·랭킹 (taxonomy._curation)
-        # 대시보드 상단의 스토리 임베드는 **있으면 켜고 없으면 끈다.**
-        # 예전엔 app.js 가 iframe 을 무조건 그려서, 이 파일이 없는 데이터셋에선
-        # 깨진 빈 박스가 떴다. 프로젝트 고유 콘텐츠를 코드가 당연시하면 안 된다.
-        "STORY": (common.SAMPLES / "lora_story.html").exists()
-                 or (common.ROOT / "docs" / "lora_story.html").exists(),
+        # 대시보드 스토리는 **HTML 본문을 그대로 실어** iframe srcdoc 으로 띄운다.
+        #
+        # 예전엔 `<iframe src="lora_story.html">` 였다. 그러면 앱이 self-contained 가 아니다 —
+        # index.html 옆에 그 파일을 손으로 복사해 둬야 하고, 안 하면 깨진 빈 박스가 뜬다
+        # (data/04_samples/ 에서 바로 열면 늘 그랬다). 앱은 파일 하나로 완결돼야 한다.
+        #
+        # DOM 에 그냥 풀지 않고 srcdoc 을 쓰는 이유: 스토리는 자기 <head> 와 CDN 스크립트를
+        # 가진 독립 문서다. 그대로 펼치면 CSS·전역 변수가 앱과 충돌한다. srcdoc 은
+        # 문서 격리는 유지하면서 **경로 의존만** 없앤다.
+        "STORY": story,
     }
     # '</' 이스케이프: source_url/notes 등 문자열에 '</script>' 가 섞여도 인라인 스크립트가
     # 끊기지 않게 한다("<\/" 는 JSON/JS 모두에서 '/'와 동일).

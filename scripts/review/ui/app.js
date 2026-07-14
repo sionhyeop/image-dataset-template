@@ -134,14 +134,30 @@ if(typeof window.addEventListener==='function')window.addEventListener('message'
   if(d.type==='lora-need-photos'&&e.source){
     try{e.source.postMessage({type:'lora-photos',photos:_loraPickPhotos(d.n||4)},'*');}catch(_){}}
 });
+// 스토리 본문(A.STORY)을 iframe 에 넣는다. **대시보드 탭이 실제로 열렸을 때만.**
+//
+// srcdoc 은 innerHTML 로 못 넣는다(따옴표·<script> 가 속성 안에서 깨진다) — 프레임을 먼저
+// 붙이고 프로퍼티로 대입한다. 그리고 대입하는 순간 파싱이 시작되므로, 초기 렌더에서 넣으면
+// 검수만 할 사람에게도 스토리의 CDN 라이브러리(GSAP·Three·ECharts·KaTeX)를 매번 받게 한다.
+// 예전 `<iframe loading="lazy">` 가 해주던 지연을 여기서 손으로 한다.
+function mountStory(){
+  if(!A.STORY)return;
+  const dash=document.getElementById('tab-dash');
+  if(!dash||!dash.classList.contains('on'))return;      // 탭이 안 열렸으면 아직
+  const fr=document.getElementById('loraFrame');
+  if(fr&&!fr.srcdoc)fr.srcdoc=A.STORY;
+}
+
 function renderDash(){
   const el=document.getElementById('tab-dash');
-  if(el._done&&!_dashDirty)return;
+  if(el._done&&!_dashDirty){mountStory();return;}       // 재렌더는 건너뛰어도 마운트는 해야 한다
   const {counts,used}=dashCounts();
   const covered=COMP.reduce((s,a)=>s+Object.keys(TAX[a]).filter(k=>(counts[a][k]||0)>=TK_MIN).length,0);
   const totalCodes=COMP.reduce((s,a)=>s+Object.keys(TAX[a]).length,0);
-  // 스토리 임베드는 A.STORY 가 있을 때만. 없는 데이터셋에서 깨진 빈 박스가 뜨면 안 된다.
-  const story=A.STORY?`<div class="lora-story"><iframe src="lora_story.html" loading="lazy" title="LoRA 학습 스토리 — 검수 라벨이 정확도가 되기까지"></iframe></div>`:'';
+  // 스토리 임베드는 A.STORY(HTML 본문)가 실려 있을 때만.
+  // src= 로 옆 파일을 부르지 않는다 — 그러면 앱이 파일 하나로 완결되지 않고,
+  // index.html 만 열었을 때 깨진 빈 박스가 뜬다. 본문은 아래에서 srcdoc 으로 넣는다.
+  const story=A.STORY?`<div class="lora-story"><iframe id="loraFrame" title="LoRA 학습 스토리 — 검수 라벨이 정확도가 되기까지"></iframe></div>`:'';
   let h=`${story}<div class="tiles">
     <div class="tile"><b id="dtot">0</b>사용 이미지</div>
     <div class="tile"><b>${covered}/${totalCodes}</b>충분한 코드 ≥${TK_MIN}</div>
@@ -157,6 +173,7 @@ function renderDash(){
     h+='</div>';
   }
   el.innerHTML=h;
+  mountStory();
   if(el._done){document.getElementById('dtot').textContent=used;document.getElementById('drev').textContent=reviewedCount();}
   else{countUp(document.getElementById('dtot'),used);countUp(document.getElementById('drev'),reviewedCount());}
   el._done=true;_dashDirty=false;

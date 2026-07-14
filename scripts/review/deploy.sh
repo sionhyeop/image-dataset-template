@@ -27,8 +27,9 @@ APP="$SAMPLES/index.html"
   exit 1
 }
 
+# 앱은 파일 하나로 완결된다 — 썸네일도 스토리도 전부 index.html 안에 들어 있다.
+# (예전엔 lora_story.html 을 따로 복사했다. 그걸 잊으면 대시보드에 깨진 빈 박스가 떴다)
 cp "$APP" "$SITE/index.html"
-[ -f "$SAMPLES/lora_story.html" ] && cp "$SAMPLES/lora_story.html" "$SITE/lora_story.html"
 
 echo "== 배포: $DS → $SITE =="
 vercel deploy "$SITE" --prod --yes
