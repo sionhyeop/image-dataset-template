@@ -1,0 +1,212 @@
+_name: "구도 데이터셋"        # 검수앱 제목에 표시된다
+
+# 데이터셋 라벨 스키마 — 이 파일 하나가 라벨 체계의 단일 출처(SSOT).
+# 새 이미지셋에 템플릿 적용 시 여기만 갈아끼우면 전 파이프라인·검수앱이 따라온다.
+#   _axes : 축 메타(키·표시명·다중선택·구도축 여부) — common.AXES 가 여기서 파생
+#   그 아래 : 축별 코드 → 한글 표시명
+# 코드를 바꾸면 반드시 master_metadata.csv 도 함께 마이그레이션할 것.
+
+# mode — 축을 '누가 채우는가'. check/axis_audit.py 의 판정이 그대로 여기로 온다.
+#   assisted : 자동라벨 + 사람 검수 (기본).  감사 판정 healthy/weak
+#   human    : 사람만. 모델이 못 읽는 축이라 AI 제안을 띄우지 않는다. 판정 model_blind
+#   derived  : 시스템이 채우고 사람은 안 본다. 검수 화면에 칩이 안 뜬다. 판정 dead
+#              (라벨 축이 아니라 '큐레이션 조건'이었던 축 — 데이터로는 남아 필터·게이트에 쓰인다)
+_axes:
+  - {key: where,        name: 장소,      multi: true,  composition: true,  mode: assisted}
+  - {key: pose_action,  name: 포즈,      multi: true,  composition: true,  mode: assisted}
+  - {key: shot_size,    name: 프레이밍,  multi: false, composition: true,  mode: assisted}
+  - {key: camera_style, name: 앵글·무드, multi: true,  composition: true,  mode: assisted}
+  # 아래 둘은 감사 결과 dead — 사람 검수분의 92%가 여성, 96%가 1인이라 정보량이 없다.
+  # 애초에 라벨 축이 아니라 "1인 인물 사진을 모은다"는 수집 조건이었다. YOLO 가 채운다.
+  - {key: gender,       name: 성별,      multi: false, composition: false, mode: derived}
+  - {key: person_count, name: 인원,      multi: false, composition: false, mode: derived}
+  - {key: expression,   name: 표정,      multi: false, composition: false, mode: human}
+  # 축 순서 = master_metadata.csv 의 컬럼 순서다(MASTER_FIELDS 가 여기서 파생).
+  # 순서를 바꾸면 다음 쓰기에서 CSV 열이 재배치된다 — 기존 데이터가 있으면 건드리지 말 것.
+
+# 코드당 목표 최소 장수(커버리지·부족 라벨 기준)
+_coverage_min: 10
+
+# 이 도메인에만 있는 CSV 컬럼 — master_metadata.csv 스키마에 추가된다.
+# 도메인 특정 스코어를 common.py 에 박아두면 다른 도메인에서 죽은 컬럼이 된다.
+# (korean_prob/insta_prob 는 clip_label 의 '한국인·인스타 감성' 필터 산출물)
+_extra_fields: [korean_prob, insta_prob]
+
+# 배타 그룹 — 한 줄 안에서 하나만 선택 가능(검수 앱이 자동 해제). 축별 그룹 목록.
+_exclusive:
+  pose_action:
+    - [P01_sitting, P10_standing, P02_leaning, P11_lying]
+  camera_style:
+    - [S01_low_angle, S02_eye_level, S03_high_angle]
+    - [S10_back_view, S11_side_view, S14_front_view]
+
+# 검수 화면의 칩 줄바꿈 — 비슷한 결끼리 묶어 알아보기 쉽게. **순수 UI 편의다.**
+# 선언하지 않으면 그 축의 칩이 한 줄로 나올 뿐, 기능에는 영향이 없다.
+# (목록에 없는 코드는 마지막 줄에 자동 편입된다)
+_chip_groups:
+  where:
+    - [W01_cafe, W05_exhibition_indoor, W09_accommodation]
+    - [W02_beach_sea, W06_nature_park]
+    - [W03_street_alley, W11_alley, W07_stairs, W10_plaza, W08_plain_wall]
+  pose_action:
+    - [P01_sitting, P10_standing, P02_leaning, P11_lying]
+    - [P03_walking_snap, P04_jumping]
+    - [P05_touching_hair, P12_hat, P07_using_props]
+  camera_style:
+    - [S01_low_angle, S02_eye_level, S03_high_angle]
+    - [S10_back_view, S11_side_view, S14_front_view]
+    - [S04_backlight_silhouette, S12_silhouette, S05_film_mood, S06_natural_light_beach,
+       S07_black_and_white, S09_bokeh_night, S13_retro_neon]
+    - [S08_mirror_selfie]
+
+# 의미 역할 — **앱이 "어느 축이 무슨 뜻인지" 여기에 물어본다.**
+# 코드에 'where' 같은 축 이름을 박지 않기 위한 장치다. 역할을 생략하면 그 기능만
+# 자동으로 비활성되고 나머지는 정상 동작한다(인물 없는 도메인에서 자연스럽게 꺼진다).
+_semantic:
+  # --- 인물 전용 (인물 없는 도메인에서는 통째로 생략) ---
+  facing:                # 피사체 방향 — 포즈캠이 라이브 프레임과 맞출 때
+    axis: camera_style
+    front: S14_front_view
+    side: S11_side_view
+    back: S10_back_view
+  framing:               # 거리감(전신/반신/얼빡) — 포즈캠 프레이밍 게이트
+    axis: shot_size
+    full: F01_full_body
+    half: F02_half_body
+    closeup: F03_closeup
+  count:                 # 피사체 개수 — 객체검출이 센 개수를 이 코드로 바꾼다
+    axis: person_count
+    single: N01_solo     # 1개 (포즈캠의 '단독/여럿' 필터가 이것만 본다 — 나머지는 생략 가능)
+    pair: N02_two        # 2개
+    many: N03_group      # 3개 이상
+
+  # --- 범용 (어느 도메인에나 있을 수 있다) ---
+  place:                 # '어디서 찍었나' 축 — 포즈캠 장소 필터·관계맵 라벨·장소 추정
+    axis: where
+  pair:                  # 베타 탭의 교차 분석 두 축 (조합 매트릭스·다양성 패널 기본값)
+    x: where
+    y: pose_action
+
+# 큐레이션 — 무엇을 모으는가. 목적이 정하고, 임계는 데이터가 정한다.
+#
+#   gates : 차단. 사람 눈에 닿기 전에 자른다. 임계 하나로 '버릴 것'만 골라 죽는 신호만 온다.
+#   rank  : 정렬. 자르지 않고 검수 순서만 정한다. 점수가 연속적이라 자를 경계가 없는 신호.
+#
+# **둘을 바꿔 쓰면 안 된다.** 실측(사람 판정 892건):
+#   · 객체검출로 차단 → 버릴 것 48.3% 차단, 살릴 것 2.1% 손실   ✅ 게이트
+#   · CLIP 유사도로 차단 → 버릴 것 69% 차단하는 대신 살릴 것 37%도 죽는다  ❌
+#   · CLIP 유사도로 정렬 → 게이트 통과분의 keep 밀도 74.0% → 83.1%       ✅ 랭커
+#
+# 임계값(min)은 손으로 찍지 말 것 — `python scripts/check/gate_audit.py --write` 가
+# 사람의 keep/discard 판정으로 측정해 annotations/curation_profile.json 에 써준다.
+_curation:
+  purpose: "카페·거리에서 찍은 1인 인물 사진의 구도 레퍼런스 (LoRA 학습용)"
+
+  # 수집 단계 필터 — 이 조건에 안 맞으면 애초에 안 받는다 (dedup.py)
+  intake:
+    min_side: 512        # 짧은 변 최소 픽셀 (학습 해상도에 못 미치면 무의미)
+    max_aspect: 3.0      # 종횡비 상한 — 파노라마 풍경 도메인이면 늘려야 한다
+    phash_hamming: 8     # 지각 해시 거리 이하면 중복. 배경이 같은 제품샷 도메인은 낮춰야 한다
+
+  # 검수 우선순위 점수 (rank.py) — **도메인마다 다르다.**
+  # 세로 인물사진 우대(0.60~0.85 → +2)는 음식(정사각·탑다운)·풍경(가로)에서 정반대다.
+  # 임계·가중치를 손으로 찍지 말 것: `python scripts/check/gate_audit.py --write` 가
+  # 사람의 keep/discard 판정으로 측정해 annotations/curation_profile.json 에 써준다.
+  score:
+    aspect:              # 종횡비(가로/세로) 구간 → 점수. 이 도메인은 세로 포트레이트를 선호.
+      - {lo: 0.60, hi: 0.85, points: 2}
+      - {lo: 0.85, hi: 1.10, points: 1}
+      - {lo: 1.30, hi: 99,   points: -1}
+    resolution:          # 긴 변 픽셀 → 점수
+      - {min: 1200, points: 2}
+      - {min: 800,  points: 1}
+      - {max: 500,  points: -2}
+    # final_score = Σ(신호 × 가중치). **손으로 찍지 말 것.**
+    # gate_audit.py 가 실제 정렬을 통과시켜 측정한다(상위 절반의 keep 밀도가 목표 함수).
+    # 신호별 단독 리프트의 비율로 주면 안 된다 — 상관된 신호가 이중계산된다.
+    #   그 프록시는 "clip 을 0.79 로 낮춰라"고 했지만 실제로는 3.0 이 최적이었다(정반대).
+    # 실측: 손으로 찍은 값 85.3% → 측정값 88.4% (상위 절반 keep 밀도, +3.1%p)
+    weights:
+      clip_score: 3.0
+      person_score: 3.0
+      resolution_score: 1.0
+      aspect_score: 1.0
+      keyword_score: 1.0
+
+  # 객체 검출 — 큐레이션 게이트의 심장. **무엇을 셀지 도메인이 정한다.**
+  detect:
+    backend: rtdetr      # rtdetr(Apache-2.0, 기본) | yolo(AGPL-3.0 ⚠ 공개배포 시 전염 위험)
+    classes: [person]    # 이 도메인의 주 피사체 (음식이면 [cake, pizza, ...], 식물이면 [potted plant])
+    min_area: 0.05       # 프레임 면적의 5% 미만 박스는 배경으로 보고 세지 않는다
+    conf: 0.4            # 실측: 면적 필터 없으면 배경 행인까지 세서 84.9%, 5% 필터로 89.9%
+
+  gates:
+    # person_score: 검출된 주 피사체 개수(면적 5% 이상만 — 배경 행인 배제). rank.py 가 계산.
+    - {signal: person_score, min: 1.0}     # 측정값: 버릴 것 48.3% 차단 / 살릴 것 2.1% 손실
+  rank:
+    # clip_score: 위 purpose 문장과 이미지의 CLIP 유사도. 차단이 아니라 검수 우선순위.
+    - {signal: clip_score}                 # 측정값: 게이트 통과분 74.0% → 83.1%
+  # 커버리지를 고르게 채울 축 (부족 라벨 전광판·보충 우선순위의 기준)
+  balance: [where, pose_action, shot_size, camera_style]
+
+where:               # WHERE — 장소/상황 (다중 라벨 가능, ; 로 구분)
+  W01_cafe: "카페"
+  W02_beach_sea: "바다/해변"
+  W03_street_alley: "거리"
+  W05_exhibition_indoor: "전시/실내"
+  W06_nature_park: "자연/공원"
+  W07_stairs: "계단"
+  W08_plain_wall: "단색 벽"
+  W09_accommodation: "숙소"
+  W10_plaza: "광장"
+  W11_alley: "골목"
+
+pose_action:         # POSE_ACTION — 동작/포즈 (다중 라벨 가능, ; 로 구분)
+  P01_sitting: "앉기"
+  P10_standing: "서기"
+  P02_leaning: "기대기"
+  P11_lying: "눕기"
+  P03_walking_snap: "걷는 스냅"
+  P04_jumping: "점프"
+  P05_touching_hair: "머리 만지기"
+  P07_using_props: "기타 소품"
+  P12_hat: "모자"
+
+shot_size:           # SHOT_SIZE — 프레이밍 (단일 라벨)
+  F01_full_body: "전신"
+  F02_half_body: "반신"
+  F03_closeup: "얼빡샷"
+
+camera_style:        # CAMERA_STYLE — 앵글/무드/시점 (다중 라벨 가능, ; 로 구분)
+  S01_low_angle: "로우앵글"
+  S02_eye_level: "눈높이"
+  S03_high_angle: "하이앵글"
+  S04_backlight_silhouette: "역광"
+  S05_film_mood: "필카 감성"
+  S06_natural_light_beach: "자연광"
+  S07_black_and_white: "흑백"
+  S08_mirror_selfie: "거울샷"
+  S09_bokeh_night: "야경"
+  S10_back_view: "뒷모습"
+  S11_side_view: "옆모습"
+  S14_front_view: "앞모습"
+  S12_silhouette: "실루엣"
+  S13_retro_neon: "레트로 네온"
+
+# --- 인물 속성 축 (v2 추가) — AI 자동 추정 후 사람이 검수 수정 ---
+
+gender:              # GENDER — 성별 (단일)
+  G01_female: "여성"
+  G02_male: "남성"
+  G03_mixed: "혼성"
+  G04_unknown: "모름"
+
+person_count:        # COUNT — 인원수 (단일, YOLO 자동)
+  N01_solo: "1인"
+  N02_two: "2인"
+  N03_group: "3인+"
+
+expression:          # EXPRESSION — 표정/무드 (단일)
+  E01_smile: "웃음"
+  E02_neutral: "무표정"
+  E03_other: "모름"

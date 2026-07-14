@@ -1,0 +1,39 @@
+# 가짜 도메인(관엽식물)의 CLIP zero-shot 프롬프트.
+#
+# 이 파일의 존재 자체가 증명이다: **새 도메인을 붙일 때 사람이 쓰는 것은 YAML 뿐이고,
+# scripts/ 는 한 줄도 안 건드린다.** 인물 관련 프롬프트가 하나도 없다는 점에 주목.
+#
+# subject_visible 은 '사람이 보이는가'가 아니라 **'이 도메인의 주 피사체가 보이는가'** 다.
+# 여기서는 식물이다. 예전엔 이 규칙이 코드에 '사람'으로 박혀 있어서, 인물 없는 도메인의
+# 데이터가 전량 rejected 됐다.
+
+axes:
+  species:
+    V01_monstera: "a photo of a monstera deliciosa houseplant with split leaves"
+    V02_ficus: "a photo of a ficus rubber plant with glossy dark leaves"
+    V03_succulent: "a close-up photo of a small succulent plant"
+
+  setting:
+    B01_windowsill: "a houseplant on a windowsill next to a window"
+    B02_floor: "a large potted plant standing on the floor of a room"
+    B03_shelf: "a small potted plant on a shelf or bookcase"
+
+  lighting:
+    L01_natural: "a plant photographed in soft natural daylight"
+    L02_artificial: "a plant photographed under indoor artificial lighting"
+    L03_backlit: "a plant backlit by bright light coming through its leaves"
+
+  # health 축은 mode: human — 모델이 못 읽는다고 보고 사람이 직접 단다.
+  # 프롬프트를 안 써도 check_consistency 가 통과한다(assisted 축만 요구한다).
+
+filters:
+  subject_visible:
+    positive: "a photo clearly showing a potted houseplant"
+    negative: "a photo with no plants in it"
+    reject: {min: 0.5, note: "식물 미확인"}
+
+  quality:
+    positive: "a high quality sharp photograph"
+    negative: "a low quality blurry photo"
+    field: quality_score
+    scale: {lo: 2, hi: 5}

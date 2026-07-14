@@ -1,0 +1,51 @@
+# 인테리어 도메인의 CLIP zero-shot 프롬프트.
+#
+# subject_visible 은 "사람이 보이는가"도 "음식이 보이는가"도 아니다 —
+# **"실내 공간이 보이는가"** 다. 이걸 잘못 쓰면 전량 rejected 된다.
+
+axes:
+  space:
+    R01_living: "an interior photo of a living room with a sofa"
+    R02_kitchen: "an interior photo of a kitchen or dining room"
+    R03_bedroom: "an interior photo of a bedroom with a bed"
+    R04_bathroom: "an interior photo of a bathroom"
+    R05_workspace: "an interior photo of a home office or study room with a desk"
+    R06_cafe_shop: "an interior photo of a cafe or a retail store"
+
+  view:
+    V01_frontal: "an interior photo shot straight at a wall, flat one-point perspective"
+    V02_corner: "an interior photo showing a corner of the room, two-point perspective"
+    V03_highangle: "an interior photo shot from above looking down at the room"
+    V04_detail: "a close-up detail shot of interior decor or furniture"
+
+  lighting:
+    L01_daylight: "an interior photo lit by natural daylight from a large window"
+    L02_warm: "an interior photo lit by warm cozy artificial lamps"
+    L03_bright_white: "a bright airy interior photo with white walls"
+    L04_dim: "a dark moody interior photo with dim lighting"
+
+  style:
+    T01_minimal: "a minimalist white interior with clean empty surfaces"
+    T02_wood: "a natural wooden interior with warm wood furniture"
+    T03_dark_modern: "a dark modern luxury interior with black and grey finishes"
+    T04_vintage: "a vintage rustic interior with antique furniture"
+    T05_industrial: "an industrial loft interior with exposed concrete and pipes"
+
+  # ⚠ CLIP 이 이걸 읽을 수 있는지 모른다. 그래서 축으로 두고 axis_audit 에게 물어본다.
+  # 'dead' 판정이 나오면 축을 접고 사람에게 넘긴다. 그게 정상적인 결말이다.
+  render:
+    G01_photo: "a real photograph of an interior taken with a camera"
+    G02_render: "a 3D rendered CGI interior visualization, computer generated"
+
+filters:
+  # 주 피사체 = 실내 공간. 실외 사진·제품 컷·평면도를 걸러낸다.
+  subject_visible:
+    positive: "a photo of the inside of a room"
+    negative: "a photo taken outdoors, or a floor plan drawing, or a product on a white background"
+    reject: {min: 0.5, note: "실내 공간 미확인"}
+
+  quality:
+    positive: "a high quality sharp professional interior photograph"
+    negative: "a low quality blurry snapshot with a watermark"
+    field: quality_score
+    scale: {lo: 2, hi: 5}

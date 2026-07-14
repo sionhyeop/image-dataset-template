@@ -1,0 +1,80 @@
+_name: "식물 데이터셋"        # 검수앱 제목에 표시된다
+
+# 가짜 도메인 픽스처 — 템플릿화 회귀 테스트용. **인물의 흔적이 하나도 없다.**
+#
+# 이 파일의 목적은 "설정만 갈아끼우면 코드는 안 건드린다"가 참인지 기계가 확인하는 것이다.
+# 실제 이미지는 필요 없다 — 스크립트가 import 되고, 축 이름을 리터럴로 잡지 않으며,
+# 검수앱이 로드 시 죽지 않는지만 본다.
+#
+# 실제로 이 픽스처를 처음 돌렸을 때 6곳이 죽었다:
+#   app.js renderDash(TypeError·화면 통째로 안 뜸) · rank.py · auto_label.py
+#   validate.py · check_consistency.py (KeyError) · pull_reviews.py(조용히 축을 버림)
+# 그때까지 TEMPLATE.md 는 "scripts/ 는 건드리지 않는다"고 적혀 있었다. 거짓이었다.
+#
+# 도메인: 가상의 '식물 사진' — 인물·포즈·성별·인원 개념이 존재하지 않는다.
+
+_axes:
+  - {key: species,  name: 종류,   multi: false, composition: true,  mode: assisted}
+  - {key: setting,  name: 배경,   multi: true,  composition: true,  mode: assisted}
+  - {key: lighting, name: 조명,   multi: true,  composition: true,  mode: assisted}
+  - {key: health,   name: 상태,   multi: false, composition: false, mode: human}
+
+_coverage_min: 5
+
+_exclusive:
+  lighting:
+    - [L01_natural, L02_artificial]
+
+# _semantic 없음 — 인물 방향/프레이밍 개념이 없는 도메인이므로 생략한다.
+#   → 포즈캠의 방향·프레이밍 게이트만 비활성되고 나머지는 정상 동작해야 한다.
+
+_curation:
+  purpose: "실내에서 키우는 관엽식물 사진 레퍼런스"
+
+  # 수집 필터 — 이 도메인은 클로즈업이 많아 최소 해상도를 낮춘다
+  intake:
+    min_side: 400
+    max_aspect: 2.0
+    phash_hamming: 6   # 같은 화분을 여러 각도로 찍은 게 많아 중복 판정을 엄격히
+
+  # 점수 규칙 — **인물 도메인과 정반대다.** 식물 사진은 정사각·가로가 많다.
+  # (인물 taxonomy 는 세로 0.60~0.85 에 +2 를 준다 — 그걸 그대로 쓰면 이 도메인은 감점당한다)
+  score:
+    aspect:
+      - {lo: 0.90, hi: 1.10, points: 2}     # 정사각 선호
+      - {lo: 1.10, hi: 1.60, points: 1}     # 가로도 무난
+      - {lo: 0.00, hi: 0.60, points: -1}    # 지나치게 세로는 감점
+    resolution:
+      - {min: 1000, points: 2}
+      - {min: 600,  points: 1}
+      - {max: 400,  points: -2}
+    weights:
+      clip_score: 2.0
+      resolution_score: 1.0
+      aspect_score: 1.0
+      keyword_score: 1.0
+      # person_score 없음 — 이 도메인에 인물 개념이 없다
+
+  gates: []          # 인물 게이트 없음 — 이 도메인엔 person_score 가 무의미하다
+  rank:
+    - {signal: clip_score}
+  balance: [species, setting, lighting]
+
+species:
+  V01_monstera: "몬스테라"
+  V02_ficus: "고무나무"
+  V03_succulent: "다육식물"
+
+setting:
+  B01_windowsill: "창가"
+  B02_floor: "바닥"
+  B03_shelf: "선반"
+
+lighting:
+  L01_natural: "자연광"
+  L02_artificial: "인공조명"
+  L03_backlit: "역광"
+
+health:
+  H01_healthy: "건강함"
+  H02_wilting: "시듦"

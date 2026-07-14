@@ -1,0 +1,58 @@
+name: CI
+
+# 이 워크플로가 지키는 주장은 하나다:
+#   "설정만 갈아끼우면 코드는 안 건드린다."
+# 축 이름을 scripts/ 에 박아 넣는 순간 datasets/example_plants(인물 흔적 0) 에서 깨진다.
+# 예제 이미지 24장이 저장소에 있으므로 **네트워크 없이** 돈다.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: 의존성 설치 (가벼운 것만)
+        # torch/open_clip/mediapipe 는 CI 에 넣지 않는다 — 수 GB 다.
+        # 이 테스트들이 잡으려는 건 '도메인 하드코딩'이지 모델 정확도가 아니다.
+        # 무거운 의존이 없으면 관련 스크립트는 스스로 건너뛴다(그것도 검증 대상이다).
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pyyaml pillow imagehash pandas numpy
+
+      - name: 정합성 검사 (예제 도메인)
+        run: python scripts/check/check_consistency.py
+
+      - name: 템플릿 회귀 테스트
+        run: python -m pytest tests/test_template.py tests/test_common.py -q
+
+      - name: 앱 JS 런타임 검증
+        run: |
+          python scripts/review/app.py
+          node tests/js/verify_app.js
+
+      - name: 도메인 이름이 코드에 새어들지 않았나
+        # scripts/ 에 인물 도메인 축 이름이 리터럴로 나타나면 실패.
+        # (주석·독스트링은 허용 — 왜 그렇게 했는지 설명하는 문장까지 막을 이유는 없다)
+        run: |
+          if grep -rnE '["'"'"'](where|pose_action|camera_style|shot_size)["'"'"']' \
+               --include=*.py --include=*.js scripts/ \
+               | grep -v node_modules | grep -v '^\s*#'; then
+            echo "::error::scripts/ 에 인물 도메인 축 이름이 리터럴로 박혀 있다 — taxonomy 에서 파생하라"
+            exit 1
+          fi
+          echo "✓ 도메인 리터럴 없음"

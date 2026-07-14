@@ -1,0 +1,123 @@
+_name: "음식 구도 데이터셋"        # 검수앱 제목에 표시된다
+
+# 음식 사진 구도 데이터셋 — 라벨 스키마 SSOT.
+#
+# 이 파일은 **템플릿의 도그푸딩**이다. 인물 데이터셋(composition)과 코드를 100% 공유하면서,
+# 인물 개념이 하나도 없다. 여기서 깨지는 것이 있으면 템플릿이 거짓말을 하는 것이다.
+#
+# 인물 taxonomy 와 다른 점:
+#   · _semantic 에 facing/framing/count 가 없다 → 인물·포즈 스택이 통째로 꺼진다
+#     (enrich.py, pose_match.py, build_index 의 pose 단계, 포즈캠의 방향/프레이밍 게이트)
+#   · _curation.score.aspect 가 정반대다 — 음식은 정사각·탑다운이 많다
+#   · _curation.detect.classes 가 음식 클래스다 (person 이 아니다)
+
+_axes:
+  - {key: dish,     name: 음식,     multi: true,  composition: true,  mode: assisted}
+  - {key: angle,    name: 앵글,     multi: false, composition: true,  mode: assisted}
+  - {key: plating,  name: 담음새,   multi: true,  composition: true,  mode: assisted}
+  - {key: lighting, name: 조명,     multi: true,  composition: true,  mode: assisted}
+  - {key: surface,  name: 바닥/배경, multi: false, composition: true,  mode: assisted}
+
+_coverage_min: 8
+
+# 인물 도메인의 korean_prob/insta_prob 같은 컬럼이 여기엔 없다.
+# (이 도메인은 '한국인인가'를 묻지 않는다 — 대신 아래 filters 에서 다른 걸 묻는다)
+_extra_fields: [appetizing]
+
+_exclusive:
+  angle:                         # 앵글은 하나만 성립한다
+    - [A01_topdown, A02_45deg, A03_eyelevel, A04_macro]
+
+_chip_groups:
+  dish:
+    - [D01_pasta, D02_pizza, D03_burger]
+    - [D04_salad, D05_soup]
+    - [D06_dessert, D07_coffee]
+  lighting:
+    - [L01_natural, L02_moody, L03_bright]
+
+# 의미 역할 — **facing/framing/count 가 없다.**
+# → 포즈캠의 방향·프레이밍·인원 게이트가 자동 비활성되고, 색감·시각 매칭만으로 동작한다.
+# → enrich.py / pose_match.py / build_index 의 pose 단계가 스스로 건너뛴다.
+_semantic:
+  place:                 # '어디에 놓였나' — 관계맵 라벨·베타 패널
+    axis: surface
+  pair:                  # 베타 교차분석 두 축
+    x: dish
+    y: angle
+
+_curation:
+  purpose: "카페·레스토랑 음식 사진의 구도 레퍼런스 (탑다운·45도·클로즈업)"
+
+  intake:
+    min_side: 512
+    max_aspect: 2.0      # 음식 사진에 파노라마는 없다 (인물은 3.0)
+    phash_hamming: 8
+
+  # 점수 규칙 — **인물 도메인과 정반대다.**
+  # 인물: 세로 0.60~0.85 에 +2 (포트레이트).  음식: 정사각·가로가 표준.
+  score:
+    aspect:
+      - {lo: 0.90, hi: 1.15, points: 2}     # 정사각 (인스타·탑다운 표준)
+      - {lo: 1.15, hi: 1.60, points: 1}     # 가로 (테이블샷)
+      - {lo: 0.00, hi: 0.65, points: -1}    # 지나치게 세로는 감점
+    resolution:
+      - {min: 1200, points: 2}
+      - {min: 800,  points: 1}
+      - {max: 500,  points: -2}
+    # 가중치는 손으로 찍지 말 것 — 검수 50장쯤 쌓이면 gate_audit.py 가 측정한다.
+    weights:
+      clip_score: 2.0
+      person_score: 1.0        # 여기서는 '음식 검출 개수' 점수다 (아래 detect.classes 참조)
+      resolution_score: 1.0
+      aspect_score: 1.0
+      keyword_score: 1.0
+
+  # 객체 검출 — **주 피사체가 사람이 아니다.**
+  detect:
+    backend: rtdetr            # Apache-2.0
+    classes: [pizza, cake, donut, sandwich, hot dog, bowl, cup]   # COCO 음식/식기 클래스
+    min_area: 0.05
+    conf: 0.35                 # 음식은 사람보다 검출 신뢰도가 낮게 나온다
+
+  gates: []                    # 검수 50장쯤 쌓이면 gate_audit.py 가 측정해서 채운다
+  rank:
+    - {signal: clip_score}
+  balance: [dish, angle, plating, lighting, surface]
+
+# --- 축별 코드 ---------------------------------------------------------------
+
+dish:                # 무엇을 찍었나 (다중 — 한 접시에 여러 개일 수 있다)
+  D01_pasta: "파스타"
+  D02_pizza: "피자"
+  D03_burger: "버거/샌드위치"
+  D04_salad: "샐러드"
+  D05_soup: "국물/스프"
+  D06_dessert: "디저트/케이크"
+  D07_coffee: "커피/음료"
+
+angle:               # 카메라 앵글 (단일 — 배타)
+  A01_topdown: "탑다운(90°)"
+  A02_45deg: "45도"
+  A03_eyelevel: "눈높이"
+  A04_macro: "매크로/클로즈업"
+
+plating:             # 담음새·연출 (다중)
+  P01_single_dish: "단품"
+  P02_table_spread: "한상차림"
+  P03_hands_in_frame: "손이 들어간 컷"
+  P04_pouring: "붓는 순간"
+  P05_garnish: "가니시 강조"
+
+lighting:            # 조명 (다중)
+  L01_natural: "자연광(창가)"
+  L02_moody: "어두운 무드"
+  L03_bright: "밝은 화이트"
+  L04_backlit: "역광"
+
+surface:             # 바닥/배경 (단일)
+  S01_wood: "우드"
+  S02_marble: "대리석"
+  S03_dark: "블랙/다크"
+  S04_white: "화이트"
+  S05_outdoor: "야외/테라스"

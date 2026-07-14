@@ -1,0 +1,37 @@
+MIT License
+
+Copyright (c) 2026 sionhyeop
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+이 라이선스는 **코드**에만 적용된다.
+
+datasets/<이름>/data/ 의 이미지는 웹에서 수집한 것으로 저작권이 각 원저작자에게 있다.
+저장소에는 이미지가 포함되지 않으며(.gitignore), 출처만 raw_metadata.csv 에 기록된다.
+이미지를 재배포하거나 상업적으로 사용하기 전에 각자 권리를 확인해야 한다.
+
+모델 가중치는 각자의 라이선스를 따른다:
+  · OpenCLIP ViT-H-14 (laion2b)         MIT
+  · DINOv2-small (transformers.js)      Apache-2.0
+  · RT-DETR r18vd (PekingU)             Apache-2.0   ← 기본 검출기
+  · MediaPipe Pose Landmarker           Apache-2.0
+  · YOLOv8n (ultralytics)               AGPL-3.0 ⚠   ← 선택 백엔드. 기본값 아님.
+    AGPL 은 네트워크 배포에도 전염되므로, 공개 웹앱을 만든다면 켜지 마라.

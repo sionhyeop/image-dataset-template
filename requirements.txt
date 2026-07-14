@@ -1,0 +1,18 @@
+# 구도 데이터셋 파이프라인 의존성
+requests>=2.31
+PyYAML>=6.0
+pandas>=2.0
+Pillow>=10.0
+imagehash>=4.3
+icrawler>=0.6.7        # Bing 이미지 검색 크롤러
+gallery-dl>=1.26       # Pinterest 등 검색 결과 다운로드
+anthropic>=0.40        # AI 자동 라벨링 백엔드 (선택 — 키 필요)
+open_clip_torch>=2.24  # 로컬 CLIP 자동 라벨링 백엔드 (키 불필요, torch 포함/용량 큼)
+# 객체 검출은 transformers 의 RT-DETR(Apache-2.0)를 쓴다 — scripts/label/detect.py
+# ⚠ ultralytics(YOLOv8)는 **AGPL-3.0** 이라 여기 넣지 않는다. 공개 저장소 + 웹배포면
+#    전염 위험이 있다. 쓰고 싶으면 직접 설치하고 taxonomy 에 backend: yolo 를 선언하라.
+python-dotenv>=1.0
+tqdm>=4.66
+mediapipe==0.10.14     # 인덱스 빌드 포즈 추출 — 0.10.30+는 libGLESv2 필요(WSL 실패), 버전 고정
+pyarrow>=16            # reference_index.parquet 입출력
+pytest>=8            # 테스트 스위트 (tests/)

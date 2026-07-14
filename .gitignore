@@ -1,0 +1,67 @@
+# 환경
+.venv/
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+test-results/
+.vercel/
+
+# node 의존성 — **경로가 아니라 폴더명으로** 무시한다.
+# 예전엔 tools/visual_embed/node_modules/ 로 경로가 박혀 있었는데 폴더를 옮기자
+# 7,800개 파일이 추적 대상이 됐다. 경로로 박은 무시 규칙은 언젠가 반드시 샌다.
+node_modules/
+package-lock.json
+
+# --- 데이터셋 산출물 (datasets/<이름>/) ----------------------------------------
+# 같은 이유로 전부 패턴이다. 데이터셋을 늘릴 때마다 규칙을 추가해야 하는 구조는
+# 새 데이터셋의 수백 MB 를 조용히 커밋에 끌고 들어온다(음식 224MB 로 실제 겪음).
+#
+# **디렉터리(`dir/`)가 아니라 그 안의 파일(`dir/**`)을 무시한다.** 디렉터리째 무시하면
+# git 이 아예 들어가 보지 않아서 `!**/.gitkeep` 예외가 영영 안 걸린다 —
+# 새로 클론한 사람에게 data/ 폴더가 통째로 없는 상태가 된다.
+**/data/00_raw/**
+**/data/01_curated/images/**
+**/data/01_curated/rejected/**
+**/data/02_processed/**
+**/data/04_samples/index.html
+**/data/04_samples/lora_story.html
+**/data/04_samples/contact_sheets/**
+!**/.gitkeep
+
+# 예외: 예제 데이터셋의 이미지는 **추적한다**(24장 · 720KB).
+# 위키미디어 공용에서 **재배포 허용 라이선스만**(CC0/PD/CC BY(-SA)) 골라 받은 것이라
+# 공개 저장소에 넣어도 안전하다. 출처·저작자·라이선스는 master_metadata.csv 에 있다.
+# 이게 있어야 클론하자마자 앱이 돌고, pytest 가 네트워크 없이 돌아간다.
+# (재수집: python datasets/example_plants/fetch_images.py)
+!datasets/example_plants/data/01_curated/images/
+!datasets/example_plants/data/01_curated/images/*.jpg
+!datasets/example_plants/annotations/master_metadata.csv
+# 03_splits 의 CSV 는 추적한다 — 이미지 목록일 뿐이라 가볍고, 학습 재현의 기준이다.
+
+# 재생성물 (build_index → embed_map/pose_match/embed_pca → app 로 다시 만들어진다)
+**/annotations/*.parquet
+**/annotations/*_embed_raw.json
+**/annotations/embedding.json
+**/annotations/poses.json
+**/annotations/pose_index.json
+**/annotations/dedup_kept.csv
+**/annotations/review_decisions.csv
+**/annotations/probe_suggestions.csv
+**/annotations/*.b32_backup.*
+!**/annotations/master_metadata.b32_backup.csv
+**/annotations/firebase_backup/backup.log
+
+# 추적한다(대체 불가): master_metadata.csv · raw_metadata.csv · auto_labels.csv ·
+#   _backups/ · firebase_backup/*.json · *_index.json(신호 인덱스 — 앱이 그대로 읽는다)
+
+# 배포 사이트 (sites/<이름>/) — index.html 은 app.py 산출물이다
+sites/*/index.html
+sites/*/lora_story.html
+
+# 모델 가중치 (재다운로드 가능 — README 참고)
+config/models/*.pt
+config/models/*.task
+
+# 실 자격증명 (firebase.example.json 만 추적)
+config/firebase.json

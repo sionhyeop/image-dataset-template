@@ -1,0 +1,28 @@
+# 음식 도메인 크롤 검색어 — 축·코드별.
+#
+# 크롤은 '무엇을' 축(dish)으로 돈다. 나머지 축(angle/plating/lighting/surface)은
+# 수집 후 CLIP 이 자동라벨한다 — 검색어로 앵글을 노리면 다양성이 죽는다.
+# (인물 도메인도 같은 이유로 where 축으로만 크롤했다: crawl.py --axis 기본값)
+
+dish:
+  D01_pasta:
+    ko: ["파스타 플레이팅 사진", "감성 파스타 사진", "레스토랑 파스타 비주얼"]
+    en: ["pasta food photography", "plated pasta dish top view"]
+  D02_pizza:
+    ko: ["피자 감성 사진", "화덕피자 플레이팅"]
+    en: ["pizza food photography", "artisan pizza flat lay"]
+  D03_burger:
+    ko: ["수제버거 사진", "샌드위치 감성 사진"]
+    en: ["gourmet burger photography", "sandwich food styling"]
+  D04_salad:
+    ko: ["샐러드 플레이팅", "샐러드볼 감성 사진"]
+    en: ["salad bowl food photography", "fresh salad flat lay"]
+  D05_soup:
+    ko: ["국물 요리 사진", "스프 플레이팅"]
+    en: ["soup bowl food photography", "ramen photography"]
+  D06_dessert:
+    ko: ["디저트 카페 사진", "케이크 감성 사진", "베이커리 플레이팅"]
+    en: ["dessert food photography", "cake styling flat lay"]
+  D07_coffee:
+    ko: ["카페 라떼 사진", "커피 감성 사진"]
+    en: ["latte art photography", "coffee cup flat lay"]

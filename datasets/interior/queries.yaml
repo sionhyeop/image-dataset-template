@@ -1,0 +1,23 @@
+# 인테리어 도메인 크롤 검색어 — 공간(space) 축으로만 돈다.
+# 앵글·조명·스타일은 검색어로 노리지 않는다. 그렇게 하면 다양성이 죽고,
+# 검색어가 곧 정답이 되어버려 CLIP 을 채점할 수 없게 된다.
+
+space:
+  R01_living:
+    ko: ["거실 인테리어", "북유럽 거실 인테리어 사진"]
+    en: ["living room interior photography", "minimalist living room design"]
+  R02_kitchen:
+    ko: ["주방 인테리어", "다이닝룸 인테리어 사진"]
+    en: ["kitchen interior photography", "dining room interior design"]
+  R03_bedroom:
+    ko: ["침실 인테리어", "감성 침실 인테리어 사진"]
+    en: ["bedroom interior photography", "cozy bedroom design"]
+  R04_bathroom:
+    ko: ["욕실 인테리어", "호텔 욕실 인테리어"]
+    en: ["bathroom interior photography", "modern bathroom design"]
+  R05_workspace:
+    ko: ["서재 인테리어", "홈오피스 인테리어 사진"]
+    en: ["home office interior photography", "study room interior design"]
+  R06_cafe_shop:
+    ko: ["카페 인테리어", "상업공간 인테리어 사진"]
+    en: ["cafe interior photography", "retail store interior design"]

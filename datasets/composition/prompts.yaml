@@ -1,0 +1,101 @@
+# CLIP zero-shot 프롬프트 — **이 파일만은 도메인마다 사람이 새로 쓴다.**
+#
+# 왜 자동화가 안 되나:
+#   CLIP 은 한글 표시명("카페")으로는 성능이 안 나오고, 코드명(W01_cafe)을 기계적으로
+#   문장화해도("a photo of W01 cafe") 품질이 급락한다. 좋은 zero-shot 문구는 사람이 쓴다.
+#   → 이것이 [A] 설정으로 뺄 수 있는 것 과 [B] 사람이 써야 하는 것 의 경계다.
+#   코드 안에 있을 이유는 없다. 여기 있으면 코드는 안 건드리고 사람은 YAML 만 쓴다.
+#
+# 검증: python scripts/check/check_consistency.py 가 taxonomy 와 1:1 인지 확인하고,
+#       프롬프트가 없는 축을 지목해준다.
+#
+# 튜닝: 임계값(멀티축에서 몇 개를 고를지)은 **손으로 찍지 않는다.**
+#       python scripts/check/tune_labels.py --write 가 사람 정답으로 측정한다.
+
+# --- 축별 코드 프롬프트 (taxonomy 의 축·코드와 1:1) ---------------------------
+axes:
+  where:
+    W01_cafe: "a portrait photo of a person in a cafe or coffee shop"
+    W02_beach_sea: "a portrait photo of a person at the beach by the sea"
+    W03_street_alley: "a street snapshot of a person on a city street or sidewalk"
+    W11_alley: "a snapshot of a person in a narrow alley or backstreet"
+    W05_exhibition_indoor: "a portrait of a person indoors at an exhibition or gallery"
+    W06_nature_park: "a portrait of a person in a park, forest or nature"
+    W07_stairs: "a portrait of a person on stairs or a staircase"
+    W08_plain_wall: "a portrait of a person in front of a plain colored wall"
+    W09_accommodation: "a portrait of a person in a hotel room or accommodation"
+    W10_plaza: "a portrait of a person in an open plaza or public square"
+
+  pose_action:
+    P01_sitting: "a person sitting down"
+    P10_standing: "a person standing upright"
+    P02_leaning: "a person leaning against something"
+    P11_lying: "a person lying down on the ground or a surface"
+    P03_walking_snap: "a candid snapshot of a person walking"
+    P04_jumping: "a person jumping in the air"
+    P05_touching_hair: "a person touching their hair"
+    P07_using_props: "a person posing with props or objects"
+    P12_hat: "a person wearing or holding a hat or cap"
+
+  shot_size:
+    F01_full_body: "a full body shot showing the whole person from head to toe"
+    F02_half_body: "a medium shot of a person framed from the waist or hips up"
+    F03_closeup: "an extreme close-up of a person's face filling the frame"
+
+  camera_style:
+    S01_low_angle: "a photo shot from a low angle looking up"
+    S02_eye_level: "a photo shot at eye level"
+    S03_high_angle: "a photo shot from a high angle looking down"
+    S04_backlight_silhouette: "a backlit photo with strong light coming from behind the subject"
+    S05_film_mood: "a photo with a nostalgic analog film camera look"
+    S06_natural_light_beach: "a photo in soft bright natural daylight"
+    S07_black_and_white: "a black and white monochrome photo"
+    S08_mirror_selfie: "a mirror selfie photo"
+    S09_bokeh_night: "a night cityscape photo with city lights"
+    S10_back_view: "a photo taken from behind the subject"
+    S11_side_view: "a photo taken from the side profile of the subject"
+    S14_front_view: "a photo taken from the front, the subject facing the camera"
+    S12_silhouette: "a dark silhouette of a person against a bright background"
+    S13_retro_neon: "a photo lit by colorful retro neon lights, vaporwave neon signage mood"
+
+  # 'derived' 축(시스템이 채움) 도 CLIP 이 초안을 낼 수 있으면 여기 적는다.
+  gender:
+    G01_female: "a photo of a woman"
+    G02_male: "a photo of a man"
+    G03_mixed: "a photo of both a man and a woman together"
+    G04_unknown: "a photo where the person's gender is unclear"
+
+  expression:
+    E01_smile: "a person smiling happily"
+    E02_neutral: "a person with a calm neutral expression"
+    E03_other: "a person with another expression"
+
+# --- 이진 판정 프롬프트 (축이 아니라 '점수'를 만든다) --------------------------
+#
+#   positive/negative 두 문장의 softmax 확률이 곧 점수(0~1)다.
+#   field  : master CSV 에 저장할 컬럼 이름 (taxonomy._extra_fields 와 맞춰야 한다)
+#   reject : 이 점수가 min 미만이면 status=rejected. **생략하면 점수만 기록한다.**
+#
+# ⚠ subject_visible 은 인물 전용이 아니다 — '이 도메인의 주 피사체가 보이는가'다.
+#    음식 도메인이면 positive 를 "a photo of a prepared dish" 로 쓰면 된다.
+filters:
+  subject_visible:
+    positive: "a photo clearly showing a person"
+    negative: "a scenery or object photo with no people"
+    reject: {min: 0.5, note: "사람 미확인"}      # 주 피사체가 없으면 버린다
+
+  quality:
+    positive: "a high quality sharp professional photograph"
+    negative: "a low quality blurry amateur photo"
+    field: quality_score
+    scale: {lo: 2, hi: 5}                        # 확률 0~1 → 2~5 점
+
+  korean_prob:
+    positive: "a photo of a young Korean East Asian person"
+    negative: "a photo of a Western Caucasian person"
+    field: korean_prob                           # 기록만 — reject 는 --style-filter 로
+
+  insta_prob:
+    positive: "a candid aesthetic instagram lifestyle snapshot of a real person"
+    negative: "a generic commercial stock photo"
+    field: insta_prob

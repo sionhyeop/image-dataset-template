@@ -1,0 +1,121 @@
+# 카테고리별 검색어 — 한국인 · 인스타 감성 레퍼런스 중심 (가이드 13절 형식)
+#
+# 방침:
+# - 한국어 "감성/인스타/데일리/스냅" 계열 검색어를 우선한다(한국인 결과가 잘 나옴).
+# - 영어는 서양 스톡을 끌어오므로 최소화하고, 쓰더라도 "korean ... aesthetic" 처럼
+#   한국을 명시한 것만 둔다(주로 Pinterest 도달용).
+# - 인스타 감성의 핵심 소스는 Pinterest 다: `--source pinterest` 로 수집 권장.
+#   (라벨 단계의 CLIP 스타일 필터가 외국/스톡 느낌을 한 번 더 걸러낸다)
+
+where:
+  W01_cafe:
+    ko: ["카페 인스타 감성 사진", "감성 카페 스냅 인물", "카페 데일리 인물사진", "카페 감성 여자 사진", "카페 분위기 사진 인물"]
+    en: ["korean cafe aesthetic photo", "korean girl cafe instagram"]
+  W02_beach_sea:
+    ko: ["바다 인스타 감성 사진", "해변 감성 스냅 인물", "바다 여행 인물사진", "노을 바다 감성 사진", "제주 바다 인물 스냅"]
+    en: ["korean beach aesthetic photo", "korean girl ocean instagram"]
+  W03_street_alley:
+    ko: ["거리 감성 스냅", "골목 인스타 감성 인물", "도심 데일리 스냅", "을지로 감성 사진", "성수동 스냅 인물"]
+    en: ["seoul street snap korean", "korean street style instagram"]
+  W05_exhibition_indoor:
+    ko: ["전시회 감성 사진", "미술관 인스타 인물", "실내 감성 스냅", "팝업 전시 인물사진", "감성 실내 데일리"]
+    en: ["korean exhibition aesthetic photo", "korean gallery instagram portrait"]
+  W06_nature_park:
+    ko: ["공원 감성 스냅", "자연 인스타 감성 인물", "숲 감성 인물사진", "벚꽃 감성 스냅", "가을 단풍 인물 스냅"]
+    en: ["korean park aesthetic photo", "korean nature instagram portrait"]
+  W07_stairs:
+    ko: ["계단 감성 스냅", "계단 인스타 감성 인물", "계단 데일리 인물사진", "감성 계단 포즈"]
+    en: ["korean stairs aesthetic photo", "korean staircase instagram"]
+  W08_plain_wall:
+    ko: ["단색 벽 감성 사진", "벽 배경 데일리 스냅", "미니멀 감성 인물", "무지 벽 인물사진", "화이트 벽 감성 스냅"]
+    en: ["korean minimal wall portrait", "korean girl wall aesthetic"]
+  W09_accommodation:
+    ko: ["호텔 감성 사진", "숙소 인스타 감성 인물", "감성 숙소 데일리", "펜션 감성 스냅", "호캉스 인물 사진"]
+    en: ["korean hotel aesthetic photo", "korean staycation instagram"]
+  W10_plaza:
+    ko: ["광장 인물 스냅", "서울광장 사진 인물", "광화문 광장 스냅", "유럽 광장 감성 인물", "탁 트인 광장 사진"]
+    en: ["city plaza portrait korean", "open square snap photo person"]
+  W11_alley:
+    ko: ["골목길 감성 인물 사진", "좁은 골목 스냅", "익선동 골목 인물", "부산 골목 감성 사진", "골목 뒷골목 인물 스냅", "홍대 골목 사진"]
+    en: ["korean alley portrait aesthetic", "narrow alley snap photo korean", "backstreet portrait seoul"]
+
+# 특정 포즈 보강 (인스타 감성 유지)
+pose_action:
+  P04_jumping:
+    ko: ["점프샷 감성 스냅", "점프 인물 사진 감성"]
+    en: ["korean jump shot aesthetic"]
+  P05_touching_hair:
+    ko: ["머리 넘기는 감성 사진", "머리카락 만지는 인물 스냅"]
+    en: ["korean girl hair touch aesthetic"]
+  P08_back_pose:
+    ko: ["뒷모습 감성 사진", "뒷모습 인스타 감성 스냅"]
+    en: ["korean back view aesthetic portrait"]
+  P06_touching_hat_or_prop:
+    ko: ["모자 쓴 감성 인물 사진", "모자 만지는 포즈 스냅"]
+    en: ["korean girl hat pose aesthetic", "touching hat portrait pose"]
+  P01_sitting:
+    ko: ["앉아있는 감성 인물 사진", "앉은 포즈 스냅"]
+    en: ["korean girl sitting pose aesthetic", "sitting portrait pose"]
+  P02_leaning:
+    ko: ["벽에 기댄 감성 사진", "기대는 포즈 인물 스냅"]
+    en: ["korean girl leaning wall pose", "leaning portrait aesthetic"]
+  P03_walking_snap:
+    ko: ["걷는 감성 스냅", "걸어가는 인물 사진"]
+    en: ["korean walking snap portrait", "candid walking pose girl"]
+  P07_using_props:
+    ko: ["소품 활용 감성 사진", "커피 든 감성 인물"]
+    en: ["korean girl with prop pose", "portrait holding coffee aesthetic"]
+  P09_side_turning:
+    ko: ["옆모습 감성 사진", "돌아보는 포즈 스냅"]
+    en: ["korean side profile portrait", "looking back pose aesthetic"]
+
+# 프레이밍 보강
+shot_size:
+  F04_upper_body_closeup:
+    ko: ["상반신 감성 인물 사진", "어깨선 감성 포트레이트"]
+    en: ["korean upper body portrait aesthetic", "shoulder up portrait girl"]
+  F01_full_body:
+    ko: ["전신 감성 인물 사진", "전신샷 감성 스냅"]
+    en: ["korean full body portrait aesthetic", "full body pose girl"]
+  F02_half_body:
+    ko: ["반신 감성 인물 사진", "허리 위 인물 스냅"]
+    en: ["korean half body portrait aesthetic", "waist up portrait girl"]
+  F03_closeup:
+    ko: ["얼굴 클로즈업 감성 사진", "감성 클로즈업 인물"]
+    en: ["korean face closeup portrait aesthetic", "beauty closeup girl"]
+
+# 특정 앵글/무드 보강
+camera_style:
+  S01_low_angle:
+    ko: ["로우앵글 감성 인물", "다리 길어보이는 감성 사진"]
+    en: ["korean low angle aesthetic photo"]
+  S03_high_angle:
+    ko: ["하이앵글 감성 인물", "위에서 찍은 감성 사진"]
+    en: ["korean high angle portrait aesthetic", "top down portrait girl"]
+  S04_backlight_silhouette:
+    ko: ["역광 감성 인물 사진", "실루엣 감성 스냅"]
+    en: ["korean backlight portrait aesthetic", "sunset silhouette portrait girl"]
+  S05_film_mood:
+    ko: ["필름 감성 인물 사진", "필카 감성 스냅 한국"]
+    en: ["korean film camera aesthetic portrait"]
+  S07_black_and_white:
+    ko: ["흑백 감성 인물 사진", "흑백 스냅 감성"]
+    en: ["korean black and white aesthetic portrait"]
+  S02_eye_level:
+    ko: ["아이레벨 감성 인물 사진", "정면 눈높이 스냅"]
+    en: ["korean eye level portrait aesthetic", "eye level snap girl"]
+  S06_natural_light_beach:
+    ko: ["자연광 감성 인물 사진", "햇살 감성 스냅"]
+    en: ["korean natural light portrait", "golden hour portrait girl"]
+  S08_mirror_selfie:
+    ko: ["거울샷 감성 사진", "거울 셀카 감성"]
+    en: ["korean mirror selfie aesthetic", "mirror selfie pose girl"]
+  S09_bokeh_night:
+    ko: ["보케 야경 감성 사진", "밤 불빛 보케 인물"]
+    en: ["korean night bokeh portrait", "city lights bokeh girl"]
+  S10_back_view:
+    ko: ["뒷모습 시점 감성 사진", "뒤에서 찍은 감성 스냅"]
+    en: ["korean back view portrait aesthetic", "from behind portrait girl"]
+  S11_side_view:
+    ko: ["옆모습 시점 감성 사진", "측면 감성 인물"]
+    en: ["korean side view portrait aesthetic", "profile portrait girl"]

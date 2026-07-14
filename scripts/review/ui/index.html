@@ -1,0 +1,124 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>/*TITLE*/</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>/*CSS*/</style></head><body>
+<header>
+ <div class="nav">
+   <div class="navrow navtabs">
+     <span class="brand">원격 라벨링<small>/*SUBTITLE*/</small></span>
+     <div class="tabgroup">
+       <button class="tab on" data-tab="review">🏷️ 검수</button>
+       <button class="tab" data-tab="cov">🖼️ 카테고리별 예시</button>
+       <button class="tab" data-tab="beta">🧪 베타</button>
+       <button class="tab" data-tab="dash">📊 대시보드</button>
+     </div>
+     <span class="grow"></span>
+     <span class="pctwrap" title="전체 라벨링 진행률"><b id="revpct">0%</b><span class="ring" id="ring"></span></span>
+   </div>
+   <div class="navrow navtools">
+     <button class="whochip" id="setwho" title="클릭해서 검수자 이름 변경"><span>검수자</span><b id="who">-</b></button>
+     <span class="navsep"></span>
+     <span class="who"><b id="revn">0</b>/<span id="totn">0</span></span>
+     <span class="grow"></span>
+     <button class="mini" id="undo" title="되돌리기 (Ctrl+Z)">↶ undo</button>
+     <button class="mini" id="jump">미검수로 ▶</button>
+     <button class="mini" id="export">CSV</button>
+     <button class="mini accent" id="posecam" title="카메라 포즈로 레퍼런스 실시간 추천 (온디바이스)">📷 포즈캠</button>
+   </div>
+ </div>
+ <div class="prog"><span id="progbar"></span></div>
+</header>
+
+<div class="panel on" id="tab-review">
+  <div class="ftop">
+    <div class="filters"><div class="filtscroll" id="filters"></div></div>
+    <div class="ranking"><h4>🏆 검수 랭킹 <span id="rankmine"></span></h4><ol id="ranklist"></ol>
+      <h4 class="whohd">👥 접속 · 활동</h4><ul id="wholist"><li class="empty">실시간 연결 대기…</li></ul></div>
+  </div>
+  <div class="ticker" id="ticker" title="부족한 라벨 — 클릭하면 해당 필터로 이동">
+    <span class="tk-head">📢 부족<br>라벨</span>
+    <div class="tk-rows">
+      <div class="tk-row"><span class="tk-rowlbl hot">긴급 &lt;10</span><div class="tk-pins" id="tkpins"></div><div class="tk-clip"><div class="tk-track" id="tktrack1"></div></div></div>
+      <div class="tk-row"><span class="tk-rowlbl">보강 &lt;30</span><div class="tk-clip"><div class="tk-track" id="tktrack2"></div></div></div>
+    </div>
+  </div>
+  <div class="fbar">
+    <button class="mini" id="reset">필터 초기화</button>
+    <label><input type="checkbox" id="pendingOnly" checked> 미검수만</label>
+    <span><b id="cnt">0</b> 표시</span>
+    <span class="hint" style="color:#777">썸네일 클릭 → 편집 · 키보드: A=검수완료 D=버리기 ←→ 이동</span>
+    <div class="revfilt" id="revfilt">
+      <button class="mini" id="revbtn" title="검수자별 라벨링 이미지 보기 (여러 명 선택 → 묶어서 표시)">👤 검수자 <em id="revn"></em></button>
+      <div class="revmenu" id="revmenu" hidden></div>
+    </div>
+    <button class="mini" id="trash" title="버리기한 사진만 보기 (다시 누르면 해제)">🗑 휴지통 <em id="trashn">0</em></button>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+<div class="panel" id="tab-cov"></div>
+<div class="panel" id="tab-beta">
+  <div id="betamain"></div>
+  <div class="bcard betacol"><h3>📊 장소별 포즈 통계 — 어떤 포즈가 대표적인지</h3>
+    <div id="betadivbody" style="margin-top:12px"><div class="divlegend" id="divlegend"></div><div id="divbox"></div></div></div>
+  <div class="bcard betacol"><h3 class="tgh" data-body="betamapbody" data-render="map">🗺️ 관계맵 <span class="tgl">▶ 열기</span></h3>
+    <div class="tgl-body" id="betamapbody">
+      <div class="maptop"><span>색상:</span><select id="mapaxis"></select>
+        <label><input type="checkbox" id="mapdensity"> 밀도</label>
+        <label><input type="checkbox" id="mapclusters"> 군집목록</label>
+        <span class="hint" style="color:#777">점=이미지·가까울수록 비슷 · 휠 확대·드래그 이동 · 점 클릭=유사사진 · Shift+드래그=영역선택</span>
+        <span class="grow"></span><button class="mini" id="mapreset">보기 초기화</button></div>
+      <div id="maplegend" class="legend"></div>
+      <div id="mapwrap"><canvas id="mapcanvas"></canvas><img id="maptip"><div id="maptiplbl"></div><div id="mapsel"></div><div id="clusterpanel"></div></div>
+      <div id="knnstrip"></div></div></div>
+  <div class="bcard betacol"><h3 class="tgh" data-body="betacombobody" data-render="combo">🔀 조합 매트릭스 <span class="tgl">▶ 열기</span></h3>
+    <div class="tgl-body" id="betacombobody">
+      <div class="maptop"><span>가로축</span><select id="cx"></select><span>세로축</span><select id="cy"></select>
+        <span class="hint" style="color:#777">칸 클릭 → 그 조합만 검수 보기 · 빈 칸(어두움)=부족한 조합</span></div>
+      <div id="combowrap"></div></div></div>
+  <div class="bcard betacol"><h3 class="tgh" data-body="betainsbody" data-render="insight">🎯 보충 우선순위 <small style="color:#777">(가장 비어있는 구도부터 — 다음 촬영/수집 후보)</small> <span class="tgl">▶ 열기</span></h3>
+    <div class="tgl-body" id="betainsbody"><div class="binsight" id="binsight"></div></div></div>
+</div>
+<div class="panel" id="tab-dash"></div>
+<canvas id="confetti"></canvas>
+
+<div id="ov"><div id="panel">
+  <div id="pstate"></div>
+  <div id="ptop"><img id="pimg"><div id="pedit"><div id="pmeta"></div><div id="aisug"></div><div id="paxes"></div></div></div>
+  <div id="pbtns">
+    <button class="keep" id="pkeep" title="한 번 더 누르면 취소">✓ 검수 완료 (A)</button>
+    <button class="discard" id="pdiscard" title="한 번 더 누르면 취소">🗑 버리기 (D)</button>
+    <button id="pprev">◀ 이전 (←)</button>
+    <button id="pnext">다음 ▶ (→)</button>
+    <button id="pclose">닫기 (Esc)</button>
+    <span class="hint">같은 버튼 다시 누르면 취소 · 라벨 칩 눌러 수정 · 이미지 클릭 확대</span>
+  </div>
+</div></div>
+<div id="zoom"><img id="zoomimg"></div>
+
+<!-- 포즈캠: 카메라 포즈 → pose_index 실시간 매칭 (전부 온디바이스, 서버 전송 없음) -->
+<div id="camwrap" hidden><div id="cambox">
+  <div class="camhd"><b>📷 포즈캠</b><span class="camsub">지금 취한 포즈와 닮은 레퍼런스 실시간 추천</span>
+    <span class="grow"></span>
+    <button class="mini" id="camup" title="사진을 업로드해 분석·추천 (성능 테스트)">📁 사진 분석</button>
+    <button class="mini" id="camlive" title="다시 실시간 카메라로" hidden>📷 카메라</button>
+    <select id="camsel" title="카메라 선택"></select>
+    <button class="mini" id="camflip" title="전/후면 전환">🔄 전환</button>
+    <button class="mini" id="cammir" title="화면 좌우반전 (후면 카메라는 자동 해제)">🪞 반전</button>
+    <button class="mini" id="camclose">✕ 닫기</button></div>
+  <input type="file" id="camfile" accept="image/*" hidden>
+  <div class="camstage"><video id="camv" autoplay playsinline muted></video><img id="camimg" hidden><canvas id="camcv"></canvas>
+    <div id="camstat">카메라 준비 중…</div>
+    <button id="camimgx" title="업로드 이미지 삭제" hidden>✕</button>
+    <div id="camzoom"><button id="camzout" title="축소">➖</button><span id="camzlbl">1.0×</span><button id="camzin" title="확대">➕</button></div></div>
+  <div class="camlblrow"><label><input type="checkbox" id="camlbl" checked> 🏷️ 라벨 가중</label>
+    <span class="sep">·</span> 장소 <select id="camwhere"><option value="">전체</option></select>
+    <span id="camest" class="est"></span></div>
+  <div id="camctx"></div>
+  <div class="camhint">전신이 보일수록 정확 · 처리는 전부 이 기기 안(서버 전송 없음) · 폰에서는 같은 주소를 열면 됩니다</div>
+  <div id="camrec"><span class="empty">포즈가 잡히면 닮은 컷이 여기에…</span></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>/*DATA*/</script>
+<script>/*JS*/</script></body></html>

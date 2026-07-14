@@ -1,0 +1,84 @@
+axis,category_id,seed_pin_url,related_count
+# ↑ 헤더는 그대로 두세요. 아래에 실제 시드 핀을 추가합니다.
+# 사용법: Pinterest에서 마음에 드는 구도의 핀을 열고 주소(.../pin/<번호>/)를 복사해 붙여넣기.
+# 특히 검색으로 잘 안 모이는 희소 축(점프/뒷모습/로우앵글/상반신클로즈업)에 효과적입니다.
+# axis 가 '#' 로 시작하거나 URL 에 '/pin/' 이 없는 행은 무시됩니다.
+#
+# 예시 (실제 핀 URL 로 교체하세요):
+# POSE,P04_jumping,https://www.pinterest.com/pin/1234567890/,50
+# POSE,P08_back_pose,https://www.pinterest.com/pin/0987654321/,50
+# STYLE,S01_low_angle,https://www.pinterest.com/pin/1122334455/,50
+POSE,P01_sitting,https://www.pinterest.com/pin/9499849210742255/,12
+STYLE,S04_backlight_silhouette,https://www.pinterest.com/pin/12947917676105072/,40
+STYLE,S04_backlight_silhouette,https://www.pinterest.com/pin/1829656095466883/,40
+STYLE,S04_backlight_silhouette,https://www.pinterest.com/pin/1900024839575662/,40
+STYLE,S03_high_angle,https://www.pinterest.com/pin/12947917676105072/,40
+STYLE,S03_high_angle,https://www.pinterest.com/pin/1688918607418326/,40
+STYLE,S03_high_angle,https://www.pinterest.com/pin/3870349675701617/,40
+FRAME,F04_upper_body_closeup,https://www.pinterest.com/pin/12947917676105072/,40
+FRAME,F04_upper_body_closeup,https://www.pinterest.com/pin/2322237303394762/,40
+FRAME,F04_upper_body_closeup,https://www.pinterest.com/pin/305963368460269887/,40
+POSE,P06_touching_hat_or_prop,https://www.pinterest.com/pin/1829656095487701/,40
+POSE,P06_touching_hat_or_prop,https://www.pinterest.com/pin/1829656095750410/,40
+POSE,P06_touching_hat_or_prop,https://www.pinterest.com/pin/34621490880910656/,40
+POSE,P08_back_pose,https://www.pinterest.com/pin/13792342604796297/,40
+POSE,P08_back_pose,https://www.pinterest.com/pin/196680708723432603/,40
+POSE,P08_back_pose,https://www.pinterest.com/pin/205124958024094532/,40
+STYLE,S01_low_angle,https://www.pinterest.com/pin/12947917676105072/,40
+STYLE,S01_low_angle,https://www.pinterest.com/pin/1688918607418326/,40
+STYLE,S01_low_angle,https://www.pinterest.com/pin/18436679719856811/,40
+POSE,P04_jumping,https://www.pinterest.com/pin/1055599909200876/,40
+POSE,P04_jumping,https://www.pinterest.com/pin/11259067814295648/,40
+POSE,P04_jumping,https://www.pinterest.com/pin/11610911542191356/,40
+FRAME,F04_upper_body_closeup,https://www.pinterest.com/pin/40180621671987924/,60
+FRAME,F04_upper_body_closeup,https://www.pinterest.com/pin/492649955093117/,60
+FRAME,F04_upper_body_closeup,https://www.pinterest.com/pin/6403624466431309/,60
+FRAME,F04_upper_body_closeup,https://www.pinterest.com/pin/2040762328791772/,60
+FRAME,F04_upper_body_closeup,https://www.pinterest.com/pin/5066618331036024/,60
+FRAME,F04_upper_body_closeup,https://www.pinterest.com/pin/62135669854130225/,60
+FRAME,F04_upper_body_closeup,https://www.pinterest.com/pin/12947917676105055/,60
+FRAME,F04_upper_body_closeup,https://www.pinterest.com/pin/15621929951782088/,60
+POSE,P08_back_pose,https://www.pinterest.com/pin/21321798231254329/,60
+POSE,P08_back_pose,https://www.pinterest.com/pin/22306960650605321/,60
+POSE,P08_back_pose,https://www.pinterest.com/pin/29343835068896819/,60
+POSE,P08_back_pose,https://www.pinterest.com/pin/29766047533655419/,60
+POSE,P08_back_pose,https://www.pinterest.com/pin/16184879907164335/,60
+POSE,P08_back_pose,https://www.pinterest.com/pin/166773992448641840/,60
+POSE,P08_back_pose,https://www.pinterest.com/pin/34199278419716912/,60
+POSE,P08_back_pose,https://www.pinterest.com/pin/422281211858599/,60
+WHERE,W03_street_alley,https://www.pinterest.com/pin/20758848278084653/,45
+WHERE,W03_street_alley,https://www.pinterest.com/pin/21181060744280657/,45
+WHERE,W03_street_alley,https://www.pinterest.com/pin/267964246575840074/,45
+WHERE,W03_street_alley,https://www.pinterest.com/pin/299700550221455481/,45
+WHERE,W08_plain_wall,https://www.pinterest.com/pin/1688918606221857/,45
+WHERE,W08_plain_wall,https://www.pinterest.com/pin/175921929192463130/,45
+WHERE,W08_plain_wall,https://www.pinterest.com/pin/34340015906584764/,45
+WHERE,W08_plain_wall,https://www.pinterest.com/pin/35184440834610117/,45
+WHERE,W05_exhibition_indoor,https://www.pinterest.com/pin/199565827236447853/,45
+WHERE,W05_exhibition_indoor,https://www.pinterest.com/pin/220817187976280006/,45
+WHERE,W05_exhibition_indoor,https://www.pinterest.com/pin/315111305200268225/,45
+WHERE,W05_exhibition_indoor,https://www.pinterest.com/pin/37365871904896584/,45
+WHERE,W01_cafe,https://www.pinterest.com/pin/14988611255942162/,45
+WHERE,W01_cafe,https://www.pinterest.com/pin/161988917841709593/,45
+WHERE,W01_cafe,https://www.pinterest.com/pin/209276713931904094/,45
+WHERE,W01_cafe,https://www.pinterest.com/pin/32580797303928148/,45
+WHERE,W07_stairs,https://www.pinterest.com/pin/1196337403893383/,45
+WHERE,W07_stairs,https://www.pinterest.com/pin/1337074888779953/,45
+WHERE,W07_stairs,https://www.pinterest.com/pin/140806235023946/,45
+WHERE,W07_stairs,https://www.pinterest.com/pin/140806235023949/,45
+WHERE,W06_nature_park,https://www.pinterest.com/pin/108790147244393076/,45
+WHERE,W06_nature_park,https://www.pinterest.com/pin/117304765294326054/,45
+WHERE,W06_nature_park,https://www.pinterest.com/pin/1618549865337909/,45
+WHERE,W06_nature_park,https://www.pinterest.com/pin/170222060913336190/,45
+WHERE,W09_accommodation,https://www.pinterest.com/pin/13370130139808965/,45
+WHERE,W09_accommodation,https://www.pinterest.com/pin/2181499817450548/,45
+WHERE,W09_accommodation,https://www.pinterest.com/pin/3518505955637734/,45
+WHERE,W09_accommodation,https://www.pinterest.com/pin/6473993212409042/,45
+WHERE,W04_night,https://www.pinterest.com/pin/24277285505506746/,45
+WHERE,W04_night,https://www.pinterest.com/pin/29273466324674844/,45
+WHERE,W04_night,https://www.pinterest.com/pin/345299496454687880/,45
+WHERE,W04_night,https://www.pinterest.com/pin/346214290128848825/,45
+WHERE,W02_beach_sea,https://www.pinterest.com/pin/11681280280364252/,45
+WHERE,W02_beach_sea,https://www.pinterest.com/pin/1548181186587530/,45
+WHERE,W02_beach_sea,https://www.pinterest.com/pin/3448137210911445/,45
+WHERE,W02_beach_sea,https://www.pinterest.com/pin/38702878043990360/,45

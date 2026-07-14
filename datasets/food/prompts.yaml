@@ -1,0 +1,65 @@
+# 음식 도메인의 CLIP zero-shot 프롬프트.
+#
+# **이 파일과 taxonomy.yaml, queries.yaml — 세 개가 새 도메인에 필요한 전부다.**
+# scripts/ 는 한 줄도 안 건드린다. 그게 참인지는 tests/test_template.py 가 매번 확인하고,
+# 이 음식 데이터셋이 실제로 돌아가는 것이 최종 증명이다.
+#
+# 인물 프롬프트가 하나도 없다는 점에 주목:
+#   subject_visible 은 '사람이 보이는가'가 아니라 **'이 도메인의 주 피사체가 보이는가'** 다.
+
+axes:
+  dish:
+    D01_pasta: "a photo of a plate of pasta or noodles"
+    D02_pizza: "a photo of a pizza"
+    D03_burger: "a photo of a hamburger or sandwich"
+    D04_salad: "a photo of a fresh salad bowl"
+    D05_soup: "a photo of a bowl of soup or stew"
+    D06_dessert: "a photo of a cake or dessert"
+    D07_coffee: "a photo of a cup of coffee or a drink"
+
+  angle:
+    A01_topdown: "a flat lay food photo shot straight down from directly above"
+    A02_45deg: "a food photo shot from a 45 degree angle"
+    A03_eyelevel: "a food photo shot from the side at eye level"
+    A04_macro: "an extreme close-up macro photo of food texture"
+
+  plating:
+    P01_single_dish: "a photo of a single plated dish on its own"
+    P02_table_spread: "a photo of a full table spread with many dishes"
+    P03_hands_in_frame: "a food photo with human hands holding or reaching for the food"
+    P04_pouring: "a food photo capturing sauce or liquid being poured"
+    P05_garnish: "a close-up of food garnished with fresh herbs or toppings"
+
+  lighting:
+    L01_natural: "a food photo in soft natural window light"
+    L02_moody: "a dark moody food photo with deep shadows"
+    L03_bright: "a bright airy food photo on a white background"
+    L04_backlit: "a backlit food photo with light coming from behind"
+
+  surface:
+    S01_wood: "food photographed on a rustic wooden table"
+    S02_marble: "food photographed on a marble surface"
+    S03_dark: "food photographed on a dark black surface"
+    S04_white: "food photographed on a clean white surface"
+    S05_outdoor: "food photographed outdoors on a terrace or patio"
+
+filters:
+  # ⚠ 인물 도메인에서는 이게 "a photo clearly showing a person" 이었다.
+  # 그 문장이 코드에 박혀 있던 시절, 음식 사진은 **전량 rejected** 됐다.
+  subject_visible:
+    positive: "a photo of prepared food or a drink on a plate"
+    negative: "a photo with no food in it"
+    reject: {min: 0.5, note: "음식 미확인"}
+
+  quality:
+    positive: "a high quality sharp professional food photograph"
+    negative: "a low quality blurry snapshot of food"
+    field: quality_score
+    scale: {lo: 2, hi: 5}
+
+  # 이 도메인 고유 스코어 — 인물의 korean_prob/insta_prob 자리에 해당한다.
+  # taxonomy._extra_fields 에 'appetizing' 을 선언했으므로 CSV 에 저장된다.
+  appetizing:
+    positive: "an appetizing styled food photo that makes you hungry"
+    negative: "an unappetizing photo of leftover or messy food"
+    field: appetizing
