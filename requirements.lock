@@ -1,3 +1,7 @@
+# 잠금 파일 — 재현 빌드용. `uv pip compile requirements.txt` 로 생성.
+# ⚠ ultralytics(YOLOv8)는 **의도적으로 뺐다** — AGPL-3.0 이라 공개 배포에 전염된다.
+#   detect.py 가 지연 import 하는 **선택** 백엔드일 뿐이고 기본값은 RT-DETR(Apache-2.0)이다.
+#   lock 이 requirements.txt 의 주장을 배신하고 있었다(실제로 여기 박혀 있었다).
 absl-py==2.5.0
 annotated-types==0.7.0
 anthropic==0.116.0
@@ -110,8 +114,6 @@ tqdm==4.68.3
 triton==3.7.1
 typing-extensions==4.16.0
 typing-inspection==0.4.2
-ultralytics==8.4.90
-ultralytics-thop==2.0.20
 umap-learn==0.5.12
 urllib3==2.7.0
 wcwidth==0.8.2

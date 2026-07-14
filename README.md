@@ -7,19 +7,42 @@
 앱은 self-contained HTML 한 장으로 정적 호스팅에 올라간다. 실시간 협업 검수는 Firebase로,
 웹캠 추천은 브라우저 안에서(transformers.js) 돈다.
 
-## 바로 돌려보기
+## 2분 만에 화면 보기
 
 ```bash
-git clone <이 저장소> && cd image-dataset-template
-uv venv .venv && uv pip install --python .venv/bin/python -r requirements.lock
+git clone https://github.com/sionhyeop/image-dataset-template && cd image-dataset-template
+uv venv .venv && uv pip install --python .venv/bin/python -r requirements-min.txt
 
 .venv/bin/python scripts/review/app.py                       # 예제 데이터셋으로 앱 생성
 xdg-open datasets/example_plants/data/04_samples/index.html  # macOS: open
 ```
 
-**예제 데이터셋(관엽식물 24장)이 들어 있어 아무 설정 없이 바로 뜬다.** 이미지는 위키미디어
-공용에서 재배포 허용 라이선스(CC0/PD/CC BY(-SA))만 골라 받은 것이고, 출처·저작자가
-`master_metadata.csv` 에 남아 있다.
+**예제 데이터셋(관엽식물 24장)이 들어 있어 아무 설정 없이 바로 뜬다.**
+`requirements-min.txt` 는 400MB 뿐이고 torch 를 안 받는다 — 검수앱·테스트가 다 돈다.
+(`pytest -q` → 29개 통과)
+
+자기 이미지를 **라벨링**하려면 그때 전체 설치를 한다:
+```bash
+uv pip install --python .venv/bin/python -r requirements.lock   # CLIP·포즈·검출 (수 GB)
+```
+
+## Claude Code 로 바로 시작하기
+
+이 저장소는 **Claude Code 와 함께 쓰도록** 만들어졌다. 클론하면 두 가지가 딸려온다:
+
+- **`CLAUDE.md`** — Claude Code 가 매 세션 읽는 운영 매뉴얼. 절대 규칙(축 이름을 코드에 박지
+  마라 · 게이트를 손으로 찍지 마라 · 프록시로 최적화하지 마라)과 이 프로젝트가 실제로 밟은
+  지뢰들이 들어 있다.
+- **`/bootstrap` 스킬** — 이미지 폴더 + "이걸로 뭘 하고 싶은지" 한 문장을 주면,
+  Claude Code 가 **이미지를 실제로 열어보고** `taxonomy.yaml`·`prompts.yaml`·`queries.yaml`
+  초안을 쓴 뒤 데이터로 검증한다. API 키가 필요 없다 — 이미지를 보는 건 Claude Code 자신이다.
+
+```
+> /bootstrap
+```
+
+이미지는 위키미디어 공용에서 재배포 허용 라이선스(CC0/PD/CC BY(-SA))만 골라 받은 것이고,
+출처·저작자가 `master_metadata.csv` 에 남아 있다.
 
 ## 이 템플릿으로 만든 것
 

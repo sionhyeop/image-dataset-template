@@ -1,0 +1,16 @@
+# 최소 설치 — **검수앱을 띄우고 테스트를 돌리는 데 필요한 것만.**
+#
+# 클론하자마자 뭔가 보이는 것이 중요하다. 전체 설치(requirements.lock)는 torch·mediapipe 로
+# 수 GB 이고 첫 CLIP 실행이 4GB 를 더 받는다. 그걸 통과해야만 화면을 볼 수 있다면
+# 대부분은 거기서 그만둔다.
+#
+# 이걸로 되는 것:  예제 데이터셋 앱 생성 · pytest · 정합성 검사 · 앱 JS 검증
+# 이걸로 안 되는 것: 자동 라벨(CLIP) · 포즈 추출 · 객체 검출 · 인덱스 빌드
+#                   → 그때 `uv pip install -r requirements.lock` 를 하면 된다.
+PyYAML>=6.0
+Pillow>=10.0
+pandas>=2.0
+numpy>=1.26
+imagehash>=4.3
+pyarrow>=16
+pytest>=8
